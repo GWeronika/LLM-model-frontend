@@ -25,7 +25,12 @@ function ChatInput({ onSend }) {
                     }
                 }}
             />
-            <button onClick={handleSend} className={styles.sendButton}>Send</button>
+            <button
+                onClick={handleSend}
+                className={styles.sendButton}
+            >
+                Send
+            </button>
         </div>
     );
 }

@@ -1,13 +1,13 @@
+import styles from './App.module.css';
 import Banner from './components/Banner';
 import ChatInput from './components/ChatInput';
 import MessageBubble from './components/MessageBubble';
 import { useState } from 'react';
-import styles from './App.module.css';
 
 function App() {
     const [messages, setMessages] = useState([]);
 
-    const handleSendMessage = (text) => {
+    const handleSendMessage = async (text) => {
         const userMessage = { sender: 'user', text };
         setMessages((prev) => [...prev, userMessage]);
 
