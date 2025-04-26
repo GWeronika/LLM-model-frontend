@@ -1,0 +1,26 @@
+.bubbleContainer {
+    width: 100%;
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.bubble {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    background-color: white;
+    word-wrap: break-word;
+}
+
+.user {
+    margin-left: auto;
+    background-color: #4F46E5;
+    text-align: right;
+}
+
+.bot {
+    margin-right: auto;
+    background-color: #4A4A4A;
+    color: #E2E8F0;
+    text-align: left;
+}

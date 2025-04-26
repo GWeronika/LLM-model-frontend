@@ -1,9 +1,28 @@
-function Banner() {
+import Banner from './components/Banner';
+import ChatInput from './components/ChatInput';
+import MessageBubble from './components/MessageBubble';
+import { useState } from 'react';
+import styles from './App.module.css';
+
+function App() {
+    const [messages, setMessages] = useState([]);
+
+    const handleSendMessage = (text) => {
+        const userMessage = { sender: 'user', text };
+        setMessages((prev) => [...prev, userMessage]);
+    };
+
     return (
-        <div>
-            <h1>Your LLM</h1>
+        <div className={styles.container}>
+            <Banner />
+            <div className={styles.chatWindow}>
+                {messages.map((msg, index) => (
+                    <MessageBubble key={index} sender={msg.sender} text={msg.text} />
+                ))}
+            </div>
+            <ChatInput onSend={handleSendMessage} />
         </div>
     );
 }
 
-export default Banner;
+export default App;
