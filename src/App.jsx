@@ -10,6 +10,11 @@ function App() {
     const handleSendMessage = (text) => {
         const userMessage = { sender: 'user', text };
         setMessages((prev) => [...prev, userMessage]);
+
+        setTimeout(() => {
+            const botMessage = { sender: 'bot', text: `Reply to: "${text}"` };
+            setMessages((prev) => [...prev, botMessage]);
+        }, 500);
     };
 
     return (

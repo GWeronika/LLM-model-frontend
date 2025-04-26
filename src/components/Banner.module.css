@@ -12,3 +12,9 @@
     font-weight: bold;
     color: white;
 }
+
+@media (min-width: 1000px) {
+    .banner {
+        width: 60%;
+    }
+}
