@@ -101,7 +101,7 @@ const handleSendMessage = async (text) => {
 
 ## Preview
 
-![img_1.png](img_1.png)
+![img_1.png](public/img_1.png)
 
 ---
 
