@@ -63,7 +63,7 @@ Each major UI element (Banner, Input, Message Bubble) is modular and styled sepa
 
 ---
 
-## Future LLM Integration (Planned)
+## Future LLM Integration
 
 In future updates, this app will **connect to a real LLM backend**.  
 The flow will work like this:
@@ -101,7 +101,7 @@ const handleSendMessage = async (text) => {
 
 ## Preview
 
-![img_1.png](public/img_1.png)
+![img.png](public/img.png)
 
 ---
 
