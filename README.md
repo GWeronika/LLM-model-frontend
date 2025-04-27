@@ -98,7 +98,7 @@ Here is the structure of the project:
 ```
 LLM-model-frontend/
  ├── public/
- │    ├── img.png (Preview Image)
+ │    ├── img.png
  ├── src/
  │    ├── components/
  │    │    ├── Banner.jsx
@@ -107,8 +107,8 @@ LLM-model-frontend/
  │    ├── App.jsx
  │    ├── App.module.css
  │    └── index.js
- ├── server.js (Backend server)
- ├── package.json (Frontend + backend scripts)
+ ├── server.js (backend server)
+ ├── package.json (frontend + backend scripts)
  └── README.md
 ```
 
