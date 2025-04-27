@@ -11,10 +11,21 @@ function App() {
         const userMessage = { sender: 'user', text };
         setMessages((prev) => [...prev, userMessage]);
 
-        setTimeout(() => {
-            const botMessage = { sender: 'bot', text: `Reply to: "${text}"` };
+        try {
+            const response = await fetch('http://localhost:5000/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text }),
+            });
+
+            const data = await response.json();
+            const botMessage = { sender: 'bot', text: data.reply };
             setMessages((prev) => [...prev, botMessage]);
-        }, 500);
+        } catch (error) {
+            console.error('Error sending message:', error);
+            const errorMessage = { sender: 'bot', text: 'Something went wrong. Please try again.' };
+            setMessages((prev) => [...prev, errorMessage]);
+        }
     };
 
     return (
