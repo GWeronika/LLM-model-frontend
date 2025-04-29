@@ -1,15 +1,14 @@
-import { google } from 'googleapis';
+const { google } = require('googleapis');
 
 const auth = new google.auth.GoogleAuth({
   keyFile: './llm-comm/sheet-key.json',
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
-
 const spreadsheetId = '1BcT1QrkEOvNpfmO_8fSMPnGdblZc5nNCVCFbPzTPMGc';
 const range = 'Arkusz1!A2:H2';
 
-export async function updateSheet(id, req, dsc, type, code, err) {
+async function updateSheet(id, req, dsc, type, code, err) {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: 'v4', auth: client });
 
@@ -18,13 +17,12 @@ export async function updateSheet(id, req, dsc, type, code, err) {
     range,
     valueInputOption: 'USER_ENTERED',
     requestBody: {
-        values: [[id, req, dsc, type, code, err, 'FALSE', 'null']]
+      values: [[id, req, dsc, type, code, err, 'FALSE', 'null']]
     },
   });
 }
 
-
-export async function getLLMResponse(interval=5000) {
+async function getLLMResponse(interval=5000) {
   await new Promise(resolve => setTimeout(resolve, interval));
 
   const client = await auth.getClient();
@@ -36,9 +34,14 @@ export async function getLLMResponse(interval=5000) {
     range,
   });
 
-  const value =  res.data.values?.[0]?.[0]
+  const value =  res.data.values?.[0]?.[0];
   if (value === 'null' || value === null || value === undefined){
-    return 'Timed out. Perhaps LLM is offline.'
+    return 'Timed out. Perhaps LLM is offline.';
   }
-  return value
+  return value;
 }
+
+module.exports = {
+  updateSheet,
+  getLLMResponse
+};
