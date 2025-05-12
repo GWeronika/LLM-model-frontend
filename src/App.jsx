@@ -76,12 +76,29 @@ function App() {
         }
     };
 
+    const handleDeleteConversation = async (id) => {
+        try {
+            await fetch(`http://localhost:5000/conversations/${id}`, {
+                method: 'DELETE',
+            });
+            setConversations((prev) => prev.filter((c) => c.id !== id));
+
+            if (activeConversationId === id) {
+                setMessages([]);
+                setActiveConversationId(null);
+            }
+        } catch (error) {
+            console.error('Failed to delete conversation:', error);
+        }
+    };
+
     return (
         <div className={styles.appContainer}>
             <Sidebar
                 conversations={conversations}
                 onSelectConversation={handleSelectConversation}
                 onCreateNew={handleCreateNew}
+                onDeleteConversation={handleDeleteConversation}
                 activeConversationId={activeConversationId}
             />
             <div className={styles.mainContent}>

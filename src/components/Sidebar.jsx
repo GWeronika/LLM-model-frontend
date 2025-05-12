@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './Sidebar.module.css';
 
-function Sidebar({ conversations, onSelectConversation, onCreateNew, activeConversationId }) {
+function Sidebar({ conversations, onSelectConversation, onCreateNew, onDeleteConversation, activeConversationId }) {
     const [isOpen, setIsOpen] = useState(true);
 
     return (
@@ -21,13 +21,23 @@ function Sidebar({ conversations, onSelectConversation, onCreateNew, activeConve
                             .map((conv) => (
                                 <li
                                     key={conv.id}
-                                    onClick={() => onSelectConversation(conv.id)}
                                     className={`${styles.item} ${conv.id === activeConversationId ? styles.active : ''}`}
                                     title={conv.title}
+                                    onClick={() => onSelectConversation(conv.id)}
                                 >
-                                    {conv.title.length > 50
-                                        ? conv.title.slice(0, 47) + '...'
-                                        : conv.title}
+                                    <span className={styles.titleText}>
+                                        {conv.title.length > 50
+                                            ? conv.title.slice(0, 47) + '...'
+                                            : conv.title}
+                                    </span>
+                                    <i
+                                        className={`fa-solid fa-trash-can ${styles.trashIcon}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onDeleteConversation(conv.id);
+                                        }}
+                                        title="Delete conversation"
+                                    ></i>
                                 </li>
                             ))}
                     </ul>

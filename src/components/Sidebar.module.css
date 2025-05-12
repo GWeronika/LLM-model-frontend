@@ -64,11 +64,39 @@
     overflow-y: auto;
 }
 
+.titleText {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.trashIcon {
+    margin-left: 0.5rem;
+    color: white;
+    cursor: pointer;
+    transition: color 0.2s, opacity 0.2s;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.item:hover .trashIcon {
+    opacity: 1;
+    visibility: visible;
+}
+
+.trashIcon:hover {
+    color: #F87171;
+}
+
 .item {
-    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem;
     border-radius: 0.5rem;
     cursor: pointer;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
     background: linear-gradient(90deg, #5d5d5d, #3A3A3A);
     transition: background-color 0.2s;
 }
