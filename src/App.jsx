@@ -4,8 +4,10 @@ import Banner from './components/Banner';
 import ChatInput from './components/ChatInput';
 import MessageBubble from './components/MessageBubble';
 import Sidebar from './components/Sidebar';
+import CategorySelector from './components/CategorySelector';
 
 function App() {
+    const [currentScreen, setCurrentScreen] = useState('chat'); // possible are 'chat' and 'category'
     const [messages, setMessages] = useState([]);
     const [conversations, setConversations] = useState([]);
     const [activeConversationId, setActiveConversationId] = useState(null);
@@ -53,8 +55,25 @@ function App() {
     };
 
     const handleCreateNew = () => {
-        setMessages([]);
-        setActiveConversationId(null);
+        setCurrentScreen('category');
+    };
+
+    const handleCategorySelect = async (category) => {
+        try {
+            const response = await fetch('http://localhost:5000/conversations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category }),
+            });
+
+            const newConv = await response.json();
+            setConversations((prev) => [newConv, ...prev]);
+            setActiveConversationId(newConv.id);
+            setMessages([]);
+            setCurrentScreen('chat');
+        } catch (error) {
+            console.error('Failed to create new conversation:', error);
+        }
     };
 
     return (
@@ -66,13 +85,19 @@ function App() {
                 activeConversationId={activeConversationId}
             />
             <div className={styles.mainContent}>
-                <Banner />
-                <div className={styles.chatWindow}>
-                    {messages.map((msg, index) => (
-                        <MessageBubble key={index} sender={msg.sender} text={msg.text} />
-                    ))}
-                </div>
-                <ChatInput onSend={handleSendMessage} />
+                {currentScreen === 'category' ? (
+                    <CategorySelector onSelect={handleCategorySelect} />
+                ) : (
+                    <>
+                        <Banner />
+                        <div className={styles.chatWindow}>
+                            {messages.map((msg, index) => (
+                                <MessageBubble key={index} sender={msg.sender} text={msg.text} />
+                            ))}
+                        </div>
+                        <ChatInput onSend={handleSendMessage} />
+                    </>
+                )}
             </div>
         </div>
     );
