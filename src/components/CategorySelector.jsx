@@ -7,10 +7,12 @@ const categories = [
     { name: 'Explaining', description: 'Explain code or logic.' },
 ];
 
-function CategorySelector({ onSelect }) {
+function CategorySelector({ onSelect, onCancel }) {
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>Choose a category</h2>
+            <div className={styles.header}>
+                <h2 className={styles.title}>Choose a category</h2>
+            </div>
             <div className={styles.grid}>
                 {categories.map((cat) => (
                     <div
@@ -22,6 +24,7 @@ function CategorySelector({ onSelect }) {
                         <p>{cat.description}</p>
                     </div>
                 ))}
+                <button className={styles.cancelButton} onClick={onCancel}>Cancel</button>
             </div>
         </div>
     );

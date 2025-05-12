@@ -86,8 +86,11 @@ function App() {
             />
             <div className={styles.mainContent}>
                 {currentScreen === 'category' ? (
-                    <CategorySelector onSelect={handleCategorySelect} />
-                ) : (
+                    <CategorySelector
+                        onSelect={handleCategorySelect}
+                        onCancel={() => setCurrentScreen("chat")}
+                    />
+                    ) : (
                     <>
                         <Banner />
                         <div className={styles.chatWindow}>
