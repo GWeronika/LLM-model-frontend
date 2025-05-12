@@ -28,7 +28,7 @@
 }
 
 .sendButton {
-    background-color: #4F46E5;
+    background: linear-gradient(90deg, #6366F1, #4F46E5);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
