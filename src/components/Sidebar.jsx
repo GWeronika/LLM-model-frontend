@@ -3,6 +3,8 @@ import styles from './Sidebar.module.css';
 
 function Sidebar({ conversations, onSelectConversation, onCreateNew, onDeleteConversation, activeConversationId }) {
     const [isOpen, setIsOpen] = useState(true);
+    const [hoveredTitle, setHoveredTitle] = useState(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
     return (
         <div className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
@@ -22,8 +24,16 @@ function Sidebar({ conversations, onSelectConversation, onCreateNew, onDeleteCon
                                 <li
                                     key={conv.id}
                                     className={`${styles.item} ${conv.id === activeConversationId ? styles.active : ''}`}
-                                    title={conv.title}
                                     onClick={() => onSelectConversation(conv.id)}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.getBoundingClientRect();
+                                        setHoveredTitle(conv.title);
+                                        setTooltipPosition({
+                                            top: e.clientY + 10,
+                                            left: e.clientX + 10,
+                                        });
+                                    }}
+                                    onMouseLeave={() => setHoveredTitle(null)}
                                 >
                                     <span className={styles.titleText}>
                                         {conv.title.length > 50
@@ -41,6 +51,17 @@ function Sidebar({ conversations, onSelectConversation, onCreateNew, onDeleteCon
                                 </li>
                             ))}
                     </ul>
+                    {hoveredTitle && (
+                        <div
+                            className={styles.tooltip}
+                            style={{
+                                top: tooltipPosition.top,
+                                left: tooltipPosition.left,
+                            }}
+                        >
+                            {hoveredTitle}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

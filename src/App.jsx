@@ -5,6 +5,7 @@ import ChatInput from './components/ChatInput';
 import MessageBubble from './components/MessageBubble';
 import Sidebar from './components/Sidebar';
 import CategorySelector from './components/CategorySelector';
+import ConversationTitle from './components/ConversationTitle';
 
 function App() {
     const [currentScreen, setCurrentScreen] = useState('chat'); // possible are 'chat' and 'category'
@@ -107,9 +108,13 @@ function App() {
                         onSelect={handleCategorySelect}
                         onCancel={() => setCurrentScreen("chat")}
                     />
-                    ) : (
+                ) : (
                     <>
                         <Banner />
+                        <ConversationTitle
+                            conversations={conversations}
+                            activeConversationId={activeConversationId}
+                        />
                         <div className={styles.chatWindow}>
                             {messages.map((msg, index) => (
                                 <MessageBubble key={index} sender={msg.sender} text={msg.text} />

@@ -49,3 +49,7 @@
         width: 60%;
     }
 }
+
+.mainContent > .titleContainer {
+    margin-top: 1rem;
+}

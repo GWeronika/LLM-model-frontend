@@ -104,3 +104,16 @@
 .item:hover {
     background: linear-gradient(90deg, #4F46E5, rgba(99, 102, 241, 0.5));
 }
+
+.tooltip {
+    position: fixed;
+    background: #ffffff;
+    color: black;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px #4F46E5;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
