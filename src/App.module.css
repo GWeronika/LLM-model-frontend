@@ -1,11 +1,17 @@
-.container {
-    min-height: 100vh;
+.appContainer {
+    display: flex;
+    height: 100vh;
     background-color: #2C2C2C;
     color: white;
+}
+
+.mainContent {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1.5rem;
+    overflow: hidden;
 }
 
 .chatWindow {
@@ -20,7 +26,7 @@
 }
 
 .banner {
-    background-color: #4F46E5;
+    background: linear-gradient(90deg, #6366F1, #4F46E5);
     padding: 1rem;
     border-radius: 0.75rem;
     margin-bottom: 1.5rem;
