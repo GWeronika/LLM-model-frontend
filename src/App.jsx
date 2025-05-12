@@ -8,7 +8,7 @@ import CategorySelector from './components/CategorySelector';
 import ConversationTitle from './components/ConversationTitle';
 
 function App() {
-    const [currentScreen, setCurrentScreen] = useState('chat'); // possible are 'chat' and 'category'
+    const [currentScreen, setCurrentScreen] = useState('chat');
     const [messages, setMessages] = useState([]);
     const [conversations, setConversations] = useState([]);
     const [activeConversationId, setActiveConversationId] = useState(null);
@@ -93,6 +93,24 @@ function App() {
         }
     };
 
+    const handleUpdateTitle = async (id, newTitle) => {
+        try {
+            const response = await fetch(`http://localhost:5000/conversations/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle }),
+            });
+            const updatedConversation = await response.json();
+            setConversations((prev) =>
+                prev.map((conv) =>
+                    conv.id === id ? { ...conv, title: updatedConversation.title } : conv
+                )
+            );
+        } catch (error) {
+            console.error('Failed to update conversation title:', error);
+        }
+    };
+
     return (
         <div className={styles.appContainer}>
             <Sidebar
@@ -114,6 +132,7 @@ function App() {
                         <ConversationTitle
                             conversations={conversations}
                             activeConversationId={activeConversationId}
+                            onUpdateTitle={handleUpdateTitle}
                         />
                         <div className={styles.chatWindow}>
                             {messages.map((msg, index) => (

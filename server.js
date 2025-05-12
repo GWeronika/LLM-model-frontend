@@ -54,6 +54,19 @@ app.post('/conversations', async (req, res) => {
     // await db.insertConversation(newConv);
 });
 
+app.put('/conversations/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title } = req.body;
+
+    const conversationIndex = conversations.findIndex(c => c.id === id);
+    if (conversationIndex === -1) {
+        return res.status(404).json({ error: 'Conversation not found' });
+    }
+
+    conversations[conversationIndex].title = title;
+    res.json(conversations[conversationIndex]);
+});
+
 app.post('/chat', async (req, res) => {
     const { message, user = 'Anonymous', category = 'default', conversationId } = req.body;
 

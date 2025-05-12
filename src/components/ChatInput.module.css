@@ -41,9 +41,10 @@
 }
 
 .sendButton:hover {
-    background-color: #4338CA;
+    background: linear-gradient(90deg, #7476ee, #6366F1);
+    transition: background-color 0.5s;
 }
 
 .sendButton:active {
-    background-color: #3730A3;
+    background: linear-gradient(90deg, #7476ee, #6366F1);
 }
