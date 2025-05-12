@@ -14,7 +14,7 @@
 
 .user {
     margin-left: auto;
-    background-color: #4F46E5;
+    background: linear-gradient(90deg, #6366F1, #4F46E5);
     text-align: right;
 }
 
