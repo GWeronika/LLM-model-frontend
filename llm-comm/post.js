@@ -8,7 +8,7 @@ const auth = new google.auth.GoogleAuth({
 const spreadsheetId = '1BcT1QrkEOvNpfmO_8fSMPnGdblZc5nNCVCFbPzTPMGc';
 const range = 'Arkusz1!A2:H2';
 
-async function updateSheet(id, req, dsc, type, code, err) {
+async function updateSheet(projectId='dev', querry='', convoId='dev', category='chat', fName='main') {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: 'v4', auth: client });
 
@@ -17,7 +17,7 @@ async function updateSheet(id, req, dsc, type, code, err) {
     range,
     valueInputOption: 'USER_ENTERED',
     requestBody: {
-      values: [[id, req, dsc, type, code, err, 'FALSE', 'null']]
+      values: [[category, querry, projectId, fName, convoId, '', 'FALSE', 'null']]
     },
   });
 }
