@@ -10,3 +10,6 @@ Darmowe obciążenie to około 4h obciążenia notatnika. Przy czym liczba ta si
 - przetrenowany model jest zapisywany na konto na huggingface (max 100GB)
 - tworzymy folder z plikiem modelu jako model.ggof i plikiem Modelfile
 - komenda: ollama create <model_name> -f Modelfile
+---
+
+This project uses components from the Unsloth project, licensed under the Apache License 2.0.
