@@ -1,0 +1,63 @@
+.editorWrapper {
+    width: 90%;
+    height: 50rem;
+    border: 1px solid #4B5563;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    background-color: #3A3A3A;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    margin: 2rem 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+button {
+    width: 10rem;
+    background: linear-gradient(90deg, #6366F1, #4F46E5);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #4e50bb, #3a34a6);
+}
+
+.codeSnippet {
+    display: flex;
+    justify-content: center;
+}
+
+.textarea {
+    width: 94%;
+    height: 34em;
+    background-color: #282828;
+    color: #F9FAFB;
+    border: 1px solid #4B5563;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 1rem;
+}

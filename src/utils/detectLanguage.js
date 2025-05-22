@@ -1,4 +1,4 @@
-export function detectLanguage(code) {
+function detectLanguage(code) {
     const patterns = [
         { lang: 'python', regex: /^\s*(def |import |print\(|class )/m },
         { lang: 'javascript', regex: /^\s*(function |const |let |console\.log|=>)/m },
@@ -39,3 +39,5 @@ export function detectLanguage(code) {
 
     return 'text';
 }
+
+module.exports = { detectLanguage };
