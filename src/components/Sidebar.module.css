@@ -1,0 +1,128 @@
+.sidebar {
+    background-color: #3A3A3A;
+    color: white;
+    height: 100%;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #4B5563;
+}
+
+.open {
+    width: 250px;
+}
+
+.closed {
+    width: 40px;
+}
+
+.active {
+    background: linear-gradient(90deg, #6366F1, #4F46E5);
+    color: white;
+}
+
+.toggleButton {
+    background: #4F46E5;
+    border: none;
+    color: white;
+    padding: 1.5rem 0.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    position: absolute;
+    top: 1rem;
+    right: -1rem;
+    width: 60px;
+    border-radius: 0.5rem;
+}
+
+.toggleButton:hover {
+    background: #6366F1;
+    transition: background-color 0.5s;
+}
+
+.content {
+    padding: 1rem;
+}
+
+.newButton {
+    background: linear-gradient(90deg, #6366F1, #4F46E5);
+    border: none;
+    color: white;
+    padding: 1.5rem 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    width: 80%;
+}
+
+.newButton:hover {
+    background: linear-gradient(90deg, #7476ee, #6366F1);
+}
+
+.header {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+}
+
+.titleText {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.trashIcon {
+    margin-left: 0.5rem;
+    color: white;
+    cursor: pointer;
+    transition: color 0.2s, opacity 0.2s;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.item:hover .trashIcon {
+    opacity: 1;
+    visibility: visible;
+}
+
+.trashIcon:hover {
+    color: #F87171;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, #5d5d5d, #3A3A3A);
+    transition: background-color 0.2s;
+}
+
+.item:hover {
+    background: linear-gradient(90deg, #4F46E5, rgba(99, 102, 241, 0.5));
+}
+
+.tooltip {
+    position: fixed;
+    background: #ffffff;
+    color: black;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px #4F46E5;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    transform: translateY(-50%);
+}

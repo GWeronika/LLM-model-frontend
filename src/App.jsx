@@ -1,11 +1,30 @@
+import { useState, useEffect } from 'react';
 import styles from './App.module.css';
 import Banner from './components/Banner';
 import ChatInput from './components/ChatInput';
 import MessageBubble from './components/MessageBubble';
-import { useState } from 'react';
+import Sidebar from './components/Sidebar';
+import CategorySelector from './components/CategorySelector';
+import ConversationTitle from './components/ConversationTitle';
 
 function App() {
+    const [currentScreen, setCurrentScreen] = useState('chat');
     const [messages, setMessages] = useState([]);
+    const [conversations, setConversations] = useState([]);
+    const [activeConversationId, setActiveConversationId] = useState(null);
+
+    useEffect(() => {
+        const fetchConversations = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/conversations');
+                const data = await response.json();
+                setConversations(data);
+            } catch (error) {
+                console.error('Failed to fetch conversations:', error);
+            }
+        };
+        fetchConversations();
+    }, []);
 
     const handleSendMessage = async (text) => {
         const userMessage = { sender: 'user', text };
@@ -28,15 +47,102 @@ function App() {
         }
     };
 
+    const handleSelectConversation = (id) => {
+        const conv = conversations.find((c) => c.id === id);
+        if (conv) {
+            setMessages(conv.messages);
+            setActiveConversationId(id);
+        }
+    };
+
+    const handleCreateNew = () => {
+        setCurrentScreen('category');
+    };
+
+    const handleCategorySelect = async (category) => {
+        try {
+            const response = await fetch('http://localhost:5000/conversations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category }),
+            });
+
+            const newConv = await response.json();
+            setConversations((prev) => [newConv, ...prev]);
+            setActiveConversationId(newConv.id);
+            setMessages([]);
+            setCurrentScreen('chat');
+        } catch (error) {
+            console.error('Failed to create new conversation:', error);
+        }
+    };
+
+    const handleDeleteConversation = async (id) => {
+        try {
+            await fetch(`http://localhost:5000/conversations/${id}`, {
+                method: 'DELETE',
+            });
+            setConversations((prev) => prev.filter((c) => c.id !== id));
+
+            if (activeConversationId === id) {
+                setMessages([]);
+                setActiveConversationId(null);
+            }
+        } catch (error) {
+            console.error('Failed to delete conversation:', error);
+        }
+    };
+
+    const handleUpdateTitle = async (id, newTitle) => {
+        try {
+            const response = await fetch(`http://localhost:5000/conversations/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle }),
+            });
+            const updatedConversation = await response.json();
+            setConversations((prev) =>
+                prev.map((conv) =>
+                    conv.id === id ? { ...conv, title: updatedConversation.title } : conv
+                )
+            );
+        } catch (error) {
+            console.error('Failed to update conversation title:', error);
+        }
+    };
+
     return (
-        <div className={styles.container}>
-            <Banner />
-            <div className={styles.chatWindow}>
-                {messages.map((msg, index) => (
-                    <MessageBubble key={index} sender={msg.sender} text={msg.text} />
-                ))}
+        <div className={styles.appContainer}>
+            <Sidebar
+                conversations={conversations}
+                onSelectConversation={handleSelectConversation}
+                onCreateNew={handleCreateNew}
+                onDeleteConversation={handleDeleteConversation}
+                activeConversationId={activeConversationId}
+            />
+            <div className={styles.mainContent}>
+                {currentScreen === 'category' ? (
+                    <CategorySelector
+                        onSelect={handleCategorySelect}
+                        onCancel={() => setCurrentScreen("chat")}
+                    />
+                ) : (
+                    <>
+                        <Banner />
+                        <ConversationTitle
+                            conversations={conversations}
+                            activeConversationId={activeConversationId}
+                            onUpdateTitle={handleUpdateTitle}
+                        />
+                        <div className={styles.chatWindow}>
+                            {messages.map((msg, index) => (
+                                <MessageBubble key={index} sender={msg.sender} text={msg.text} />
+                            ))}
+                        </div>
+                        <ChatInput onSend={handleSendMessage} />
+                    </>
+                )}
             </div>
-            <ChatInput onSend={handleSendMessage} />
         </div>
     );
 }

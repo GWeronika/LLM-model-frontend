@@ -1,0 +1,47 @@
+.container {
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    justify-items: center;
+}
+
+.card {
+    background: linear-gradient(90deg, #6366F1, #4F46E5);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: white;
+    width: 100%;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.cancelButton {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #ffffff;
+    transition: all 0.2s ease-in-out;
+}
+
+.cancelButton:hover {
+    background-color: #666;
+}
