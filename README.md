@@ -15,7 +15,8 @@ Input
 | Category| Query| ProjectId(default=projectDev)| FunctionName| ConversationId|
 |---------|------|------------------------------|-------------|---------------|
 | cat| query           |projectId| fName   |convoId|
-|category of query|query content|projectId in simplest version there is one project|uqnique function name for given project| id of conversation
+|category of query|query content|projectId in simplest version there is one project|uqnique function name for given project| id of conversation|
+
 Output
 | Output|
 |-------|
@@ -28,13 +29,26 @@ Output
 |getSelect|SQL query|-|-|current conversation id/-|results/error log|optional conversation id is used for saving to conversation database
 |chatSubcategory|LLM query|current project id|function name|current conversation id|result| chatSubcategory is LLM generation category
 |saveFunction|code|current project id|function name|current conversation id/-|true/error log| optional conversation id is used for saving to conversation database
+|saveDescription|description|current project id|function name|current conversation id/-|true/error log| optional conversation id is used for saving to conversation database
 |deleteProject|-|project id|-|-|true/error log|
 |deleteFunction|-|project id|function name|current conversation id/-|true/error log|optional conversation id is used for saving to conversation database
 |deleteConversation|-|project id|-|conversation id|true/ error log|
+|explain|query/-|project id|-|current conversation id|explains last generated response with bonus questions provided in querry
+
+## Db Tables
+Projects stores saved files with latest generated explanation for them
+|id|projectId|fName|code|description|
+|-|-|-|-|-|
+|int KEY| varchar(100)|varchar(300)|text|text
+
+Conservations stores conversations history
+|id|projectId|conversationId|category|query|userInput|
+|-|-|-|-|-|-|
+|int KEY| varchar(100)| varchar(100)|varchar(100)|text|boolean
 
 ## TODO
 ---
 - XAI features
 - add files ...
 - advance prompt logic
-- describe categories and database in README
+- cast from google to regular server (?)
