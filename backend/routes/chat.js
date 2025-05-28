@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { updateSheet } = require('../llm-comm/post');
+const { updateSheet, getLLMResponse} = require('../llm-comm/post');
 const { mockResponse, extractCodeBlocks, persistCode, ensureDir } = require('../utils/codeUtils');
 
 let conversations = require('./conversations').conversations || [];
@@ -19,7 +19,8 @@ router.post('/', async (req, res) => {
         console.error('updateSheet error:', e.message);
     }
 
-    const botResponse = mockResponse(message, category);
+    // const botResponse = mockResponse(message, category);
+    const botResponse = await getLLMResponse();
 
     const codeBlocks = extractCodeBlocks(`${message}\n${botResponse}`);
     await ensureDir();
