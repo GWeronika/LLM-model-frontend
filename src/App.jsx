@@ -46,10 +46,19 @@ function App() {
     }, []);
 
     const handleSendMessage = async (text) => {
+        if (!activeConversationId) {
+            alert('Select a conversation first!');
+            return;
+        }
         const userMessage = { sender: 'user', text };
         setMessages((prev) => [...prev, userMessage]);
 
         try {
+            await fetch(`/conversations/${activeConversationId}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, userQuery: true }),
+            });
             const response = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -57,21 +66,22 @@ function App() {
             });
 
             const data = await response.json();
-            const botMessage = { sender: 'bot', text: data.reply };
+            const botText = data.reply;
+            const botMessage = { sender: 'bot', text: botText };
+            await fetch(`/conversations/${activeConversationId}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: botText, userQuery: false }),
+            });
 
-            const newMessages = [...messages, userMessage, botMessage];
-            setMessages(newMessages);
-
-            if (containsCode(data.reply)) {
-                const codeBlocks = extractCodeBlocks(data.reply);
-
-                for (let i = 0; i < codeBlocks.length; i++) {
-                    const codeText = codeBlocks[i].code;
-                    const lang = codeBlocks[i].lang || 'txt';
-                    const fileName = suggestFileName(lang, codeText);
+            setMessages((prev) => [...prev, botMessage]);
+            if (containsCode(botText)) {
+                const codeBlocks = extractCodeBlocks(botText);
+                for (let block of codeBlocks) {
+                    const fileName = suggestFileName(block.lang || 'txt', block.code);
                     try {
-                        await saveCodeToFile(codeText, fileName);
-                        setFiles(prevFiles => [...prevFiles, fileName]);
+                        await saveCodeToFile(block.code, fileName);
+                        setFiles((prev) => [...prev, fileName]);
                     } catch (e) {
                         console.error('Błąd zapisu kodu:', e.message);
                     }
@@ -115,14 +125,21 @@ function App() {
         console.log(data.message);
     }
 
-    const handleSelectConversation = (id) => {
-        const conv = conversations.find((c) => c.id === id);
-        if (conv) {
-            setMessages(conv.messages);
+    const handleSelectConversation = async (id) => {
+        try {
             setActiveConversationId(id);
             setSelectedFile(null);
+            setMessages([]);
+
+            const res = await fetch(`/conversations/${id}/messages`);
+            if (!res.ok) throw new Error('Failed to load messages');
+            const msgs = await res.json();
+            setMessages(msgs);
+        } catch (error) {
+            console.error('Failed to load conversation messages:', error);
         }
     };
+
 
     const handleCreateNew = () => {
         setCurrentScreen('category');
@@ -195,14 +212,19 @@ function App() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: newTitle }),
             });
-            const updatedConversation = await response.json();
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(`HTTP ${response.status}: ${text}`);
+            }
+
             setConversations((prev) =>
                 prev.map((conv) =>
-                    conv.id === id ? { ...conv, title: updatedConversation.title } : conv
+                    conv.id === id ? { ...conv, title: newTitle } : conv
                 )
             );
         } catch (error) {
             console.error('Failed to update conversation title:', error);
+            alert(`Failed to update conversation title: ${error.message}`);
         }
     };
 

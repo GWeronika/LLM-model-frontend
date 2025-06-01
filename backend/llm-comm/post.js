@@ -12,7 +12,7 @@ const spreadsheetId = '1BcT1QrkEOvNpfmO_8fSMPnGdblZc5nNCVCFbPzTPMGc';
 const updateRange = 'Arkusz1!A2:H2';
 const responseRange = 'Arkusz1!H2';
 
-async function updateSheet(projectId = 'dev', query = '', convoId = 'dev', category = 'chat', fName = 'main') {
+async function updateSheet(category = 'chat', query = '', projectId = 'dev', fName = 'main', convoId = 'dev') {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: 'v4', auth: client });
 
@@ -26,22 +26,22 @@ async function updateSheet(projectId = 'dev', query = '', convoId = 'dev', categ
   });
 }
 
-async function getLLMResponse(interval = 5000) {
-  await new Promise(resolve => setTimeout(resolve, interval));
-
+async function getLLMResponse(maxWaitMs = 15000, intervalMs = 1000) {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: 'v4', auth: client });
-
-  const res = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range: responseRange,
-  });
-
-  const value = res.data.values?.[0]?.[0];
-  if (!value || value === 'null') {
-    return 'Timed out. Perhaps LLM is offline.';
+  const start = Date.now();
+  while (Date.now() - start < maxWaitMs) {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: responseRange,
+    });
+    const value = res.data.values?.[0]?.[0];
+    if (value && value !== 'null') {
+      return value;
+    }
+    await new Promise(resolve => setTimeout(resolve, intervalMs));
   }
-  return value;
+  return 'Timed out. Perhaps LLM is offline.';
 }
 
 module.exports = {

@@ -2,16 +2,23 @@ import React, { useState, useEffect } from 'react';
 import styles from './ConversationTitle.module.css';
 
 function ConversationTitle({ conversations, activeConversationId, onUpdateTitle }) {
-    const activeConversation = conversations.find(
+    const safeConversations = Array.isArray(conversations) ? conversations : [];
+    const activeConversation = safeConversations.find(
         (conv) => conv.id === activeConversationId
     );
     const [isHovered, setIsHovered] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [newTitle, setNewTitle] = useState(activeConversation ? activeConversation.title : '');
+    const [newTitle, setNewTitle] = useState(
+        activeConversation && typeof activeConversation.title === 'string'
+            ? activeConversation.title
+            : ''
+    );
 
     useEffect(() => {
-        if (activeConversation) {
+        if (activeConversation && typeof activeConversation.title === 'string') {
             setNewTitle(activeConversation.title);
+        } else {
+            setNewTitle('');
         }
     }, [activeConversation]);
 
@@ -48,9 +55,9 @@ function ConversationTitle({ conversations, activeConversationId, onUpdateTitle 
                         />
                     ) : (
                         <h3 className={styles.title} onClick={handleTitleClick}>
-                            {newTitle.length > 40
-                                ? newTitle.slice(0, 37) + '...'
-                                : newTitle}
+                            {(newTitle || '').length > 40
+                                ? (newTitle || '').slice(0, 37) + '...'
+                                : (newTitle || '')}
                         </h3>
                     )}
                     {isHovered && newTitle.length > 30 && (

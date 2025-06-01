@@ -2,62 +2,87 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 
-let conversations = [
-    {
-        id: '1',
-        title: 'Discussing React component structure',
-        updateDate: '2025-05-12T12:00:00Z',
-        category: 'Explaining',
-        messages: [
-            { sender: 'user', text: 'How should I structure my components in React?' },
-            { sender: 'bot', text: 'It depends on your app, but usually by feature...' },
-        ]
-    },
-    {
-        id: '2',
-        title: 'Python code to connect to MongoDB',
-        updateDate: '2025-05-11T08:20:00Z',
-        category: 'Code Generation',
-        messages: [
-            { sender: 'user', text: 'How do I connect to MongoDB in Python?' },
-            { sender: 'bot', text: 'You can use pymongo library like this:\n\n```python\nimport pymongo\n```' },
-        ]
-    },
-    {
-        id: '3',
-        title: 'Creating a Person class in Java',
-        updateDate: '2025-05-10T15:00:00Z',
-        category: 'Code Generation',
-        messages: [
-            { sender: 'user', text: 'Can you help me write a Person class in Java with some fields and functions?' },
-            { sender: 'bot', text: 'Sure! Here\'s an example:\n\n```java\npublic class Person {\n    private String name;\n    private int age;\n\n    public Person(String name, int age) {\n        this.name = name;\n        this.age = age;\n    }\n\n    public String getName() {\n        return name;\n    }\n\n    public void setName(String name) {\n        this.name = name;\n    }\n\n    public int getAge() {\n        return age;\n    }\n\n    public void setAge(int age) {\n        this.age = age;\n    }\n\n    public String introduce() {\n        return \"Hi, my name is \" + name + \" and I am \" + age + \" years old.\";\n    }\n}\n```' },
-        ]
+const {
+    getAllConversations,
+    createConversation,
+    updateConversation,
+    getConversationMessages,
+    saveMessage,
+} = require('../llm-comm/db');
+
+router.get('/', async (req, res) => {
+    try {
+        const conversations = await getAllConversations();
+        res.json(conversations);
+    } catch (err) {
+        console.error('Error fetching conversations:', err);
+        res.status(500).json({ error: 'Failed to fetch conversations' });
     }
-];
-
-router.get('/', (_, res) => {
-    res.json(conversations);
 });
 
-router.post('/', (req, res) => {
-    const { category } = req.body;
-    const id = uuidv4();
-    const newConv = {
-        id,
-        title: `New ${category} Conversation`,
-        updateDate: new Date().toISOString(),
-        category,
-        messages: []
-    };
-    conversations.push(newConv);
-    res.json(newConv);
+router.post('/', async (req, res) => {
+    try {
+        const { category } = req.body;
+        const id = uuidv4();
+
+        const newConv = {
+            id,
+            title: `New ${category} Conversation`,
+            updateDate: new Date().toISOString(),
+            category,
+            messages: [],
+        };
+
+        const savedConv = await createConversation(newConv);
+        res.json(savedConv);
+    } catch (err) {
+        console.error('Error creating conversation:', err);
+        res.status(500).json({ error: 'Failed to create conversation' });
+    }
 });
 
-router.put('/:id', (req, res) => {
-    const conv = conversations.find(c => c.id === req.params.id);
-    if (!conv) return res.status(404).json({ error: 'Conversation not found' });
-    conv.title = req.body.title;
-    res.json(conv);
+router.put('/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { title } = req.body;
+
+        const updatedConv = await updateConversation(id, title);
+        if (!updatedConv) {
+            return res.status(404).json({ error: 'Conversation not found' });
+        }
+        res.json(updatedConv);
+    } catch (err) {
+        console.error('Error updating conversation:', err);
+        res.status(500).json({ error: 'Failed to update conversation' });
+    }
+});
+
+router.get('/:conversationId/messages', async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+        const messages = await getConversationMessages(conversationId);
+        res.json(messages);
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
+router.post('/:conversationId/messages', async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+        const { text, userQuery, category } = req.body;
+
+        if (typeof text !== 'string' || typeof userQuery !== 'boolean') {
+            return res.status(400).json({ error: 'Invalid request body' });
+        }
+
+        const savedMsg = await saveMessage(conversationId, text, userQuery, category || '');
+        res.json(savedMsg);
+    } catch (err) {
+        console.error('Error saving message:', err);
+        res.status(500).json({ error: 'Failed to save message' });
+    }
 });
 
 module.exports = router;
