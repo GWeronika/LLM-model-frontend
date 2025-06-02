@@ -48,9 +48,9 @@ class DbHandler:
         values = (projectId, fName, desc)
         return self.__executeCommit(sql, values)
 
-    def saveConversation(self, projectId, conversationId, query, user=True):
-        sql = """INSERT INTO conversations (projectName, conversationId, query userQuery) VALUES (%s, %s, %s, %s)"""
-        values = (projectId, conversationId, query, user)
+    def saveConversation(self, projectId, conversationId, category, query, user=True):
+        sql = """INSERT INTO conversations (projectName, conversationId, category query, userQuery) VALUES (%s, %s, %s, %s, %s)"""
+        values = (projectId, conversationId, category, query, user)
         return self.__executeCommit(sql, values)
 
     def getSelect(self, sql):
@@ -98,7 +98,7 @@ class DbHandler:
         return "[]"
 
     def getConversationContext(self, projectId, conversationId):
-        sql = """SELECT * FROM conversations WHERE projectName =%s AND conservationId = %s ORDER BY id"""
+        sql = """SELECT * FROM conversations WHERE projectName =%s AND conversationId = %s ORDER BY id"""
         values = (projectId, conversationId)
         rows = self.__executeFetchall(sql, values)
         if len(rows) > 10: return rows[-10:]

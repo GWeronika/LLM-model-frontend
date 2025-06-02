@@ -6,7 +6,15 @@ class LocalAIHandler:
     def __init__(self, model):
         self.model = model
 
-    def callAI(self, msg):
+    def __parseHistory(self, msg, history):
+        result = []
+        for entry in history:
+            if entry[1]: result.append({"role":"user", "content":entry[0]})
+            else: result.append({"role":"assistant", "content":entry[0]})
+        return "Conversation history:" + str(result)[-1000:] + "Query: " + msg
+
+    def callAI(self, msg, history):
+        msg = self.__parseHistory(msg, history)
         url = "http://localhost:11434/api/chat"
         model = self.model
         payload = {

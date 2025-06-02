@@ -11,6 +11,7 @@ class GoogleHandler:
         self.RANGE = 'Arkusz1!G2:H2'
 
     def __write(self, val='Server reached - LLM down'):
+        val = val[:49998]
         creds = service_account.Credentials.from_service_account_file(
             self.SERVICE_ACCOUNT_FILE, scopes=self.SCOPES)
 
