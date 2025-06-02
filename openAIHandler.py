@@ -10,7 +10,7 @@ class OpenAIHandler:
     def __parseHistory(self, msg, history):
         result = []
         for entry in history:
-            if entry[1]: result.append({"role":"user", "content":entry[0]})
+            if entry[1]==1: result.append({"role":"user", "content":entry[0]})
             else: result.append({"role":"assistant", "content":entry[0]})
         result.append({"role":"user", "content":msg})
         return result

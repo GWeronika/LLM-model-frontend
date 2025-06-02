@@ -17,11 +17,12 @@ class RequestHandler:
     def checkStatus(self, df):
         st = df['status']
         st = st[0]
-        if pd.isna(st) or pd.isnull(st) or st == 'true' or st == 'TRUE': return True
+        if pd.isna(st) or pd.isnull(st) or st == 'true' or st == 'TRUE' or st==True: return True
         return False
     
     def adresRespone(self, df):
-        return self.promptProcessor.response(df)
+        res =  self.promptProcessor.response(df)
+        self.googleHandler.write(str(res))
     
     def run(self):
         while True:
@@ -36,8 +37,9 @@ class RequestHandler:
         try:
             self.adresRespone(df)
         except Exception as e:
+            print("Exception requestHandler")
             print(e)
-            if depth == 0: self.__attempt(df, depth=1)
+            if depth < 2: self.__attempt(df, depth=depth+1)
             else: self.googleHandler.write('Failure:' + str(e))
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ class DbHandler:
         self.conn = MySQLdb.connect(
             host='localhost',
             user='root',
-            password='123',
+            password='1234',
             database='LLM'
         )
         self.cursor = self.conn.cursor()
@@ -43,13 +43,13 @@ class DbHandler:
     
     def saveDescription(self, projectId, fName, desc):
         sql = """INSERT INTO descriptions 
-                (projectName , functionName , description ) 
+                (projectName , functionName , description) 
                 VALUES (%s,%s,%s)"""
         values = (projectId, fName, desc)
         return self.__executeCommit(sql, values)
 
     def saveConversation(self, projectId, conversationId, category, query, user=True):
-        sql = """INSERT INTO conversations (projectName, conversationId, category query, userQuery) VALUES (%s, %s, %s, %s, %s)"""
+        sql = """INSERT INTO conversations (projectName, conversationId, category, query, userQuery) VALUES (%s, %s, %s, %s, %s)"""
         values = (projectId, conversationId, category, query, user)
         return self.__executeCommit(sql, values)
 
@@ -88,25 +88,24 @@ class DbHandler:
         values = (projectId, functionName)
         rows = self.__executeFetchall(sql, values)
         if len(rows) > 0 :return rows[-1]
-        return "[]"
+        return []
     
     def getDescription(self, projectId, functionName):
         sql = """SELECT description FROM descriptions WHERE projectName =%s AND functionName = %s ORDER BY id"""
         values = (projectId, functionName)
         rows = self.__executeFetchall(sql, values)
         if len(rows) > 0 :return rows[-1]
-        return "[]"
+        return []
 
     def getConversationContext(self, projectId, conversationId):
-        sql = """SELECT * FROM conversations WHERE projectName =%s AND conversationId = %s ORDER BY id"""
+        sql = """SELECT query, userQuery FROM conversations WHERE projectName =%s AND conversationId = %s ORDER BY id"""
         values = (projectId, conversationId)
         rows = self.__executeFetchall(sql, values)
-        if len(rows) > 10: return rows[-10:]
-        elif len(rows) > 0: return rows
-        return "[]"
+        if len(rows) > 0: return rows
+        return []
 
     def getProjectFunctions(self, projectId):
-        sql = """SELECT DISTINCT functionName FROM codebase WHERE projectName =%s ORDER BY id"""
+        sql = """SELECT DISTINCT functionName FROM codebase WHERE projectName =%s"""
         values = (projectId,)
         rows = self.__executeFetchall(sql, values)
         return rows

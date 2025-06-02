@@ -23,19 +23,21 @@ class PromptProcessor:
         self.FC = OpenAIHandler()
 
     def response(self, df):
-        self.DB.saveConversation(df['projectId'][0], df['convoId'][0], df['cat'][0], df['query'][0], user=True)
         if df['cat'][0] in self.DBCATEGORIES: res =  self.dbResponse(df)
-        elif df['cat'][0] == "FC": res =  self.parseToFunctionCall(df)
-        else: res = self.genResponse(df)
-        self.DB.saveConversation(df['projectId'][0], df['convoId'][0], df['cat'][0], res, user=False)
-        if df['cat'][0] == 'explain': self.DB.saveDescription(df['projectId'][0], df['fName'][0], res)
+        else:
+            if df['cat'][0] == "FC": res =  self.parseToFunctionCall(df)
+            else: res = self.genResponse(df)
+            self.DB.saveConversation(df['projectId'][0], df['convoId'][0], df['cat'][0], df['query'][0], user=True)
+            self.DB.saveConversation(df['projectId'][0], df['convoId'][0], df['cat'][0], str(res), user=False)
+
+        if df['cat'][0] == 'explain': self.DB.saveDescription(df['projectId'][0], df['fName'][0], str(res))
         return res
     
-    def parseToFunctionCall(self, df):
+    def parseToFunctionCall(self, df): #FC
         msg = {'projectId':df['projectId'][0], 'fName':df['fName'][0], 'query':df['quey'][0], 'convoId':df['convoId'][0]}
-        return self.autoGenerate(df['cat'][0], df['projectId'][0], df['fName'][0], df['query'][0], df['convoId'][0])
+        return self.autoGenerate('XAI', df['projectId'][0], df['fName'][0], df['query'][0], df['convoId'][0])
 
-    def autoGenerate(self, cat, projectId, fName, query, convoId):
+    def autoGenerate(self, cat, projectId, fName, query, convoId): #FC
         df = {'cat':[cat], 'projectId':[projectId], 'fName':[fName], 'query':[query], 'convoId':[convoId]}
         return self.response(df)
 
@@ -60,7 +62,7 @@ class PromptProcessor:
         You are coding assitant specialized in XAI, explain last generated answer.
 
         #Instruction
-        Generated answer {query}
+        Last generated answer: {query}
         """
         return self.callAI("XAI", prompt, history)
     
@@ -73,7 +75,7 @@ class PromptProcessor:
         You are coding assitant specialized in {df['cat'][0]}
         
         #Instruction
-        Answer this question {query}. With additional context of {information}.
+        Answer this question: {query}. With additional context of {information}.
         """
         return self.callAI(df['cat'][0], prompt, history)
 
@@ -82,23 +84,24 @@ class PromptProcessor:
     
     def codebaseQA(self, df):
         fNames = self.DB.getProjectFunctions(df['projectId'][0])
-        fCode = self.DB.getCode(df['projectId'][0], df['fName'][0])
-        fNames = [name for name in fNames if name in fCode+[df['fName'][0]]]
-        code = {name:self.DB.getCode(name) for name in fNames}
-        desc = {name:self.DB.getDescription(name) for name in fNames}
+        fNames = [name[0] for name in fNames if name[0] in df['query'][0]]
+        code = {name:self.DB.getCode(df['projectId'][0], name) for name in fNames}
+        desc = {name:self.DB.getDescription(df['projectId'][0], name) for name in fNames}
+ 
         
         resultString = "Code:\n"
         for fName in code:
-            if code[fName] == "[]": continue
+            if code[fName] == []: continue
             else: resultString += f"{fName}:{code[fName]},\n"
+        resultString = resultString[:5000]
         resultString += "Description:\n"
         for fName in desc:
-            if desc[fName] == "[]": continue
+            if desc[fName] == []: continue
             else: resultString += f"{fName}:{desc[fName]},\n"
-        return resultString
+        return resultString[:10000]
     
     def conversationContext(self, df):
         context = self.DB.getConversationContext(df['projectId'][0], df['convoId'][0])
         history = []
-        for x in context: history.append([x[1], x[-1]])
+        for x in context: history.append([x[0], x[-1]])
         return history
