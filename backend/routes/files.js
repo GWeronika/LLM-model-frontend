@@ -58,7 +58,7 @@ router.put('/:name', async (req, res) => {
             'utf-8'
         );
         res.sendStatus(204);
-        updateSheet('Anonymous', req.body, '', 'saveFunction', req.params.name) // saveFunction call to model+db server on creation
+        updateSheet('Anonymous', req.body, '', 'saveFunction', req.params.name) // saveFunction call to model+db server on edition
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
