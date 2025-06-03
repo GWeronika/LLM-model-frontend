@@ -4,6 +4,8 @@ const path = require('path');
 const fs = require('fs/promises');
 const { ensureDir, extractCodeBlocks } = require('../utils/codeUtils');
 const { readFileLineByLine } = require('../utils/readLineUtils');
+const { updateSheet} = require('../llm-comm/post');
+
 
 const CODE_ROOT = path.join(
     process.env.HOME || process.env.USERPROFILE,
@@ -56,6 +58,7 @@ router.put('/:name', async (req, res) => {
             'utf-8'
         );
         res.sendStatus(204);
+        updateSheet('Anonymous', req.body, '', 'saveFunction', req.params.name) // saveFunction call to model+db server on creation
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -64,6 +67,7 @@ router.put('/:name', async (req, res) => {
 router.delete('/:name', async (req, res) => {
     try {
         await fs.unlink(path.join(CODE_ROOT, req.params.name));
+        updateSheet('Anonymous', '', '', 'deleteFunction', req.params.name); // deleteFunction call to model+db server on deletion
         res.sendStatus(204);
     } catch {
         res.status(404).json({ error: 'File not found' });
@@ -87,7 +91,7 @@ router.post('/save-code', async (req, res) => {
         const content = codeBlocks.map(cb => `// Language: ${cb.lang}\n${cb.code}`).join('\n\n');
         const filePath = path.join(CODE_ROOT, fileName);
         await fs.writeFile(filePath, content, 'utf-8');
-
+        updateSheet('Anonymous', content, '', 'saveFunction', fileName) // saveFunction call to model+db server on creation
         res.json({ message: `Zapisano ${codeBlocks.length} bloków kodu do pliku ${fileName}` });
     } catch (e) {
         console.error('save-code error:', e);
