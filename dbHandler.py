@@ -87,7 +87,7 @@ class DbHandler:
         self.__executeCommit(sql, values)
 
         sql = """DELETE FROM convodata WHERE conversationId = %s AND projectName = %s"""
-        self.__executeCommit(sql, values)
+        return self.__executeCommit(sql, values)
     
     def getCode(self, projectId, functionName):
         sql = """SELECT code FROM codebase WHERE projectName =%s AND functionName = %s ORDER BY id"""
