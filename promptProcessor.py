@@ -14,7 +14,8 @@ class PromptProcessor:
         "getSelect",
         "deleteFunction",
         "deleteConversation",
-        "deleteProject"
+        "deleteProject",
+        "saveConversationData"
     ]
 
     def __init__(self, local=-1):
@@ -48,7 +49,9 @@ class PromptProcessor:
         elif category == 'getSelect': return self.DB.getSelect(df['query'][0])
         elif category == 'deleteFunction': return self.DB.deleteFunction(df['projectId'][0], df['fName'][0])
         elif category == 'deleteConversation': return self.DB.deleteConversation(df['projectId'][0], df['convoId'][0])
+        elif category == 'saveConversationData': return self.DB.saveConversationData(df['projectId'][0], df['convoId'][0], df['cat'][0], df['fName'][0], df['query'][0])
         else: return self.DB.deleteProject(df['projectId'][0])
+        
 
     def genResponse(self, df):
         if df['cat'][0] == 'XAI': return self.XAI(df)

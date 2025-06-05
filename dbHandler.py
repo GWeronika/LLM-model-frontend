@@ -68,8 +68,11 @@ class DbHandler:
         self.__executeCommit(sql, values)
 
         sql = """DELETE FROM conversations WHERE projectName = %s"""
+        self.__executeCommit(sql, values)
+
+        sql = """DELETE FROM convodata WHERE projectName = %s"""
         return self.__executeCommit(sql, values)
-    
+
     def deleteFunction(self, projectId, fName):
         sql = """DELETE FROM codebase WHERE functionName = %s AND projectName = %s"""
         values = (fName, projectId)
@@ -81,7 +84,10 @@ class DbHandler:
     def deleteConversation(self, projectId, conversationId):
         sql = """DELETE FROM conversations WHERE conversationId = %s AND projectName = %s"""
         values = (conversationId, projectId)
-        return self.__executeCommit(sql, values)
+        self.__executeCommit(sql, values)
+
+        sql = """DELETE FROM convodata WHERE conversationId = %s AND projectName = %s"""
+        self.__executeCommit(sql, values)
     
     def getCode(self, projectId, functionName):
         sql = """SELECT code FROM codebase WHERE projectName =%s AND functionName = %s ORDER BY id"""
@@ -109,3 +115,11 @@ class DbHandler:
         values = (projectId,)
         rows = self.__executeFetchall(sql, values)
         return rows
+    
+    def saveConversationData(self, projectId, convoId, category, convoName, date):
+        sql = """INSERT INTO convodata 
+                (projectName , conversationId , conversationName, creationDate, category) 
+                VALUES (%s,%s,%s,%s,%s)"""
+        values = (projectId, convoId, convoName, date, category)
+        return self.__executeCommit(sql, values)
+    

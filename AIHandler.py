@@ -14,6 +14,8 @@ class AIHandler:
         "debug":"\nPredict what should the function do, then achieve this functionality by fixing code. "
     }
 
+    ENDMSG = "Please write all code in one block surrounded with ```CODE```."
+
     def __init__(self, local=-1):
         categories = ["utility", "data", "api", "ui", "event", "acces", "auth", "explain", "test", "debugg", "XAI"]
         if local==2: self.LLMtoCategoryMap = {k:v for k,v in zip(categories, [1,1,1,1,1,2,1,3,1,3,3])}
@@ -24,9 +26,8 @@ class AIHandler:
         else: self.defaultModelInx = 0
 
     def __addTemplate(self, category, msg):
-        if category in self.TEMPLATES: return msg + self.TEMPLATES[category]
-        else: return msg
-
+        if category in self.TEMPLATES: return msg + self.TEMPLATES[category] + self.ENDMSG
+        else: return msg + self.ENDMSG
 
     def callAI(self, category, msg, history):
         msg = self.__addTemplate(category, msg)
