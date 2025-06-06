@@ -32,22 +32,24 @@ function App() {
         fetchConversations();
     }, []);
 
+    const fetchFiles = async () => {
+        try {
+            const response = await fetch('/files/list');
+            if (!response.ok) throw new Error('Failed to fetch files');
+            const data = await response.json();
+            setFiles(data);
+        } catch (error) {
+            console.error('Failed to fetch files:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const response = await fetch('/files/list');
-                const data = await response.json();
-                setFiles(data);
-            } catch (error) {
-                console.error('Failed to fetch files:', error);
-            }
-        };
         fetchFiles();
     }, []);
 
     const handleSendMessage = async (text) => {
         const userMessage = { sender: 'user', text };
-        setMessages((prev) => [...prev, userMessage]);
+        setMessages(prev => [...prev, userMessage]);
 
         try {
             const response = await fetch('/chat', {
@@ -58,62 +60,31 @@ function App() {
 
             const data = await response.json();
             const botMessage = { sender: 'bot', text: data.reply };
-
-            const newMessages = [...messages, userMessage, botMessage];
-            setMessages(newMessages);
+            setMessages(prev => [...prev, botMessage]);
 
             if (containsCode(data.reply)) {
-                const codeBlocks = extractCodeBlocks(data.reply);
-
-                for (let i = 0; i < codeBlocks.length; i++) {
-                    const codeText = codeBlocks[i].code;
-                    const lang = codeBlocks[i].lang || 'txt';
-                    const fileName = suggestFileName(lang, codeText);
-                    try {
-                        await saveCodeToFile(codeText, fileName);
-                        setFiles(prevFiles => [...prevFiles, fileName]);
-                    } catch (e) {
-                        console.error('Błąd zapisu kodu:', e.message);
+                if (!activeConversationId) {
+                    console.warn('No active conversation ID');
+                } else {
+                    const fileName = `${suggestFileName(data.reply)}-${activeConversationId}.txt`;
+                    const saveRes = await fetch('/files/save-code', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ conversationText: data.reply, fileName }),
+                    });
+                    if (!saveRes.ok) {
+                        const err = await saveRes.json();
+                        throw new Error(err.error || 'Błąd zapisu kodu');
                     }
+                    await fetchFiles();
                 }
             }
         } catch (error) {
             console.error('Error sending message:', error);
             const errorMessage = { sender: 'bot', text: 'Something went wrong. Please try again.' };
-            setMessages((prev) => [...prev, errorMessage]);
+            setMessages(prev => [...prev, errorMessage]);
         }
     };
-
-    function extractCodeBlocks(text) {
-        const regex = /```(\w*)\n([\s\S]*?)```/g;
-        const blocks = [];
-        let match;
-        while ((match = regex.exec(text)) !== null) {
-            blocks.push({ lang: match[1], code: match[2] });
-        }
-        return blocks;
-    }
-
-    async function saveCodeToFile(codeText, fileName) {
-        const res = await fetch('/files/save-code', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                conversationText: `\`\`\`\n${codeText}\n\`\`\``,
-                fileName,
-            }),
-        });
-
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'Błąd zapisu');
-        }
-
-        const data = await res.json();
-        console.log(data.message);
-    }
 
     const handleSelectConversation = (id) => {
         const conv = conversations.find((c) => c.id === id);
@@ -150,23 +121,23 @@ function App() {
         try {
             const res = await fetch(`/files/${fileName}`);
             if (!res.ok) throw new Error('Failed to load file content');
-            const text = await res.text();
+            const content = await res.text();
             setSelectedFile(fileName);
-            setFileContent(text.content);
+            setFileContent(content);
         } catch (error) {
             console.error(error);
         }
     };
 
-
     const handleDeleteFile = async (fileName) => {
         try {
-            const res = await fetch(`/files/${fileName}`, {
-                method: 'DELETE',
-            });
+            const res = await fetch(`/files/${fileName}`, { method: 'DELETE' });
             if (!res.ok) throw new Error('Failed to delete file');
-
-            setFiles(prev => prev.filter(f => f !== fileName));
+            await fetchFiles();
+            if (selectedFile === fileName) {
+                setSelectedFile(null);
+                setFileContent('');
+            }
         } catch (error) {
             console.error('Failed to delete file:', error);
         }

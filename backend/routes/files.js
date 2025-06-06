@@ -86,13 +86,13 @@ router.post('/save-code', async (req, res) => {
         if (codeBlocks.length === 0) {
             return res.status(400).json({ error: 'Nie znaleziono bloków kodu w tekście' });
         }
-        await ensureDir();
 
-        const content = codeBlocks.map(cb => `// Language: ${cb.lang}\n${cb.code}`).join('\n\n');
+        await ensureDir();
+        const content = codeBlocks.map(cb => `////////////////// CHOOSE CODE //////////////////\n${cb.code}`).join('\n\n');
         const filePath = path.join(CODE_ROOT, fileName);
-        await fs.writeFile(filePath, content, 'utf-8');
-        updateSheet('Anonymous', content, '', 'saveFunction', fileName) // saveFunction call to model+db server on creation
-        res.json({ message: `Zapisano ${codeBlocks.length} bloków kodu do pliku ${fileName}` });
+
+        await fs.appendFile(filePath, content + '\n', 'utf-8');
+        await updateSheet('Anonymous', content, '', 'appendFunction', fileName);        res.json({ message: `Dopisano ${codeBlocks.length} bloków kodu do pliku ${fileName}` });
     } catch (e) {
         console.error('save-code error:', e);
         res.status(500).json({ error: 'Błąd zapisu pliku' });

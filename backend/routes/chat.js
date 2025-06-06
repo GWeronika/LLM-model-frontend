@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { updateSheet, getLLMResponse} = require('../llm-comm/post');
-const { mockResponse, extractCodeBlocks, persistCode, ensureDir } = require('../utils/codeUtils');
 const { conversations } = require('./conversations');
 
 router.post('/', async (req, res) => {
@@ -25,16 +24,6 @@ router.post('/', async (req, res) => {
     } catch (err) {
         console.error('getLLMResponse error:', err.message);
         return res.status(500).json({ error: 'Failed to get LLM response' });
-    }
-
-    try {
-        const codeBlocks = extractCodeBlocks(`${message}\n${botResponse}`);
-        await ensureDir();
-        for (const { lang, code } of codeBlocks) {
-            await persistCode(lang.toLowerCase(), code);
-        }
-    } catch (e) {
-        console.error('Code processing error:', e.message);
     }
 
     if (conversationId) {
