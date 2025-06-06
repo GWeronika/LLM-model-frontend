@@ -15,7 +15,9 @@ class PromptProcessor:
         "deleteFunction",
         "deleteConversation",
         "deleteProject",
-        "saveConversationData"
+        "saveConversationData",
+        "loadConversationData",
+        "loadConversationMsg"
     ]
 
     def __init__(self, local=-1):

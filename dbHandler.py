@@ -122,4 +122,28 @@ class DbHandler:
                 VALUES (%s,%s,%s,%s,%s)"""
         values = (projectId, convoId, convoName, date, category)
         return self.__executeCommit(sql, values)
-    
+
+    def loadConversationData(self, projectId):
+        sql = """SELECT 
+        conversationId , conversationName, creationDate, category FROM convodata
+        WHERE projectName = %s"""
+        values = (projectId,)
+        rows = self.__executeFetchall(sql, values)
+        
+        out = ""
+        for i,r in enumerate(rows):
+            if i==10: break
+            if len(out) + len(str(r))+5 > 50000: break
+            for el in r: out += str(el) + ","
+            out += ";"
+        return out[:-1]
+
+    def loadConversationMsg(self, projectId, convoId):
+        rows = self.getConversationContext(projectId, convoId)[::-1]
+        
+        out = ""
+        for r in rows:
+            if len(out) + len(str(r))+5 > 50000: break
+            for el in r: out += str(el) + ","
+            out += ";"
+        return out[:-1]

@@ -11,7 +11,7 @@ class LocalAIHandler:
         for entry in history:
             if entry[1]: result.append({"role":"user", "content":entry[0]})
             else: result.append({"role":"assistant", "content":entry[0]})
-        return "Conversation history:" + str(result)[-1000:] + "Query: " + msg
+        return "Conversation history:" + str(result)[-5000:] + "Query: " + msg
 
     def callAI(self, msg, history):
         msg = self.__parseHistory(msg, history)
