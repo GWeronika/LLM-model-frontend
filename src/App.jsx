@@ -18,6 +18,7 @@ function App() {
     const [files, setFiles] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const [fileContent, setFileContent] = useState('');
+    const [activeConversationCategory, setActiveConversationCategory] = useState(null);
 
     useEffect(() => {
         const fetchConversations = async () => {
@@ -55,12 +56,19 @@ function App() {
             const response = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text }),
+                body: JSON.stringify({ message: text, conversationId: activeConversationId, category: activeConversationCategory}),
             });
 
             const data = await response.json();
             const botMessage = { sender: 'bot', text: data.reply };
             setMessages(prev => [...prev, botMessage]);
+
+            const conv = conversations.find(c => c.id === activeConversationId);
+                if (conv) {
+                    conv.messages.push({ sender: 'user', text: text });
+                    conv.messages.push({ sender: 'bot', text: data.reply});
+                    conv.updateDate = new Date().toISOString();
+            }
 
             if (containsCode(data.reply)) {
                 if (!activeConversationId) {
@@ -91,6 +99,7 @@ function App() {
         if (conv) {
             setMessages(conv.messages);
             setActiveConversationId(id);
+            setActiveConversationCategory(conv.category);
             setSelectedFile(null);
         }
     };
@@ -110,6 +119,7 @@ function App() {
             const newConv = await response.json();
             setConversations((prev) => [newConv, ...prev]);
             setActiveConversationId(newConv.id);
+            setActiveConversationCategory(newConv.category);
             setMessages([]);
             setCurrentScreen('chat');
         } catch (error) {
@@ -153,6 +163,7 @@ function App() {
             if (activeConversationId === id) {
                 setMessages([]);
                 setActiveConversationId(null);
+                setActiveConversationCategory(null);
             }
         } catch (error) {
             console.error('Failed to delete conversation:', error);
