@@ -12,7 +12,7 @@ const spreadsheetId = '1BcT1QrkEOvNpfmO_8fSMPnGdblZc5nNCVCFbPzTPMGc';
 const updateRange = 'Arkusz1!A2:H2';
 const responseRange = 'Arkusz1!H2';
 
-async function updateSheet(projectId = 'dev', query = '', convoId = 'dev', category = 'chat', fName = 'main') {
+async function updateSheet(projectId = 'dev', query = '', convoId = 'dev', category = 'chat', fName = 'main', convoCat='') {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: 'v4', auth: client });
 
@@ -21,7 +21,7 @@ async function updateSheet(projectId = 'dev', query = '', convoId = 'dev', categ
     range: updateRange,
     valueInputOption: 'USER_ENTERED',
     requestBody: {
-      values: [[category, query, projectId, fName, convoId, '', 'FALSE', 'null']]
+      values: [[category, query, projectId, fName, convoId, convoCat, 'FALSE', 'null']]
     },
   });
 }
