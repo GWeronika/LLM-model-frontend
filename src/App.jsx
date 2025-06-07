@@ -94,14 +94,32 @@ function App() {
         }
     };
 
-    const handleSelectConversation = (id) => {
-        const conv = conversations.find((c) => c.id === id);
+    const handleSelectConversation = async (id) => {
+        const convIndex = conversations.findIndex(c => c.id === id);
+        const conv = conversations[convIndex];
         if (conv) {
             setMessages(conv.messages);
             setActiveConversationId(id);
             setActiveConversationCategory(conv.category);
             setSelectedFile(null);
         }
+
+        if (conv && !conv.msgLoaded) {
+            try {
+                const response = await fetch(`/conversations/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({id: id}),
+                });
+                const data = await response.json();
+                setConversations(data);
+                setMessages(data[convIndex].messages);
+            } catch (error) {
+                console.error('Failed to load chat history', error);
+            }
+        }
+
+        
     };
 
     const handleCreateNew = () => {

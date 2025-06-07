@@ -4,7 +4,6 @@ const { updateSheet, getLLMResponse} = require('../llm-comm/post');
 const { conversations } = require('./conversations');
 
 router.post('/', async (req, res) => {
-    console.log(req.body);
     const {
         message,
         user = 'Anonymous',

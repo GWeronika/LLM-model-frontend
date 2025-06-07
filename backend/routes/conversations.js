@@ -6,15 +6,27 @@ const { updateSheet, getLLMResponse} = require('../llm-comm/post');
 var conv = null;
 async function loadConversations() {
     if (conv) return conv;
-    updateSheet('Anonymous', '', '', 'loadConversationData', '');
+    await updateSheet('Anonymous', '', '', 'loadConversationData', '');
     conv = [];
     let queryStr = await getLLMResponse();
     if (queryStr === 'Timed out. Perhaps LLM is offline.') return conv;
     for (let entry of queryStr.split(";")) {
         let x = entry.split(",");
-        conv.push({ id: x[0], title: x[1], updateDat: x[2], category: x[3], messages: []});
+        conv.push({ id: x[0], title: x[1], updateDat: x[2], category: x[3], messages: [], msgLoaded: false});
     }
-    return conv;
+}
+
+async function loadConversationMsg(id) {
+    await updateSheet('Anonymous', '', id, 'loadConversationMsg', '');
+    let msgString = await getLLMResponse();
+    if (msgString === 'Timed out. Perhaps LLM is offline.') return [];
+    let msg = [];
+    for (let entry of msgString.split("!@#$%;")) { // syf ale przesyłanie po jednej wiadomości jest za wolne
+        let x = entry.split("!@#$%,");
+        if (x[1] === "1") msg.push({sender: 'user', text: x[0]});
+        else msg.push({sender: 'bot', text: x[0]});
+    }
+    return msg;
 }
 
 let conversations = [
@@ -26,7 +38,8 @@ let conversations = [
         messages: [
             { sender: 'user', text: 'Are you my assistant?' },
             { sender: 'bot', text: 'Yes, I am.' },
-        ]
+        ],
+        msgLoaded: true
     }
 ];
 
@@ -36,6 +49,15 @@ router.get('/', async(_, res) => {
         conversations = [...conversations, ...conv];
     }
     res.json(conversations);
+});
+
+router.patch('/:id', async(req, res) => {
+    const idToLoad = req.params.id;
+    const convIndex = conversations.findIndex(c => c.id === idToLoad);
+    
+    conversations[convIndex].messages = await loadConversationMsg(idToLoad);
+    conversations[convIndex].msgLoaded = true;
+    return res.json(conversations);
 });
 
 router.delete('/:id', async(req, res) => {
@@ -55,7 +77,8 @@ router.post('/', async(req, res) => {
         title: `New ${category} Conversation`,
         updateDate: new Date().toISOString(),
         category,
-        messages: []
+        messages: [],
+        msgLoaded: true
     };
     conversations.push(newConv);
     await updateSheet('Anonymous', newConv.updateDate, newConv.id, 'saveConversationData', newConv.title, newConv.category);
