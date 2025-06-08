@@ -26,7 +26,7 @@ async function updateSheet(projectId = 'dev', query = '', convoId = 'dev', categ
   });
 }
 
-async function getLLMResponse(interval = 5000) {
+async function getLLMResponse(interval = 5000, depth=0) {
   await new Promise(resolve => setTimeout(resolve, interval));
 
   const client = await auth.getClient();
@@ -39,6 +39,7 @@ async function getLLMResponse(interval = 5000) {
 
   const value = res.data.values?.[0]?.[0];
   if (!value || value === 'null') {
+    if (depth < 2) return getLLMResponse(depth=depth+1);
     return 'Timed out. Perhaps LLM is offline.';
   }
   return value;

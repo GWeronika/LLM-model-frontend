@@ -1,10 +1,16 @@
 import styles from './CategorySelector.module.css';
 
 const categories = [
-    { name: 'Code Generation', description: 'Generate code from natural language.' },
-    { name: 'Code Documentation', description: 'Generate docs and comments.' },
-    { name: 'Debugging', description: 'Find and fix bugs.' },
-    { name: 'Explaining', description: 'Explain code or logic.' },
+    { name: 'chat', description: 'Selects category based on user question.' },
+    { name: 'utility', description: 'General code generation.' },
+    { name: 'test', description: 'Generates tests.' },
+    { name: 'debug', description: 'Debugging code' },
+    { name: 'data', description: 'Data processing.' },
+    { name: 'api', description: 'API connections.' },
+    { name: 'ui', description: 'UI elements.' },
+    { name: 'event', description: 'Event handling logic.' },
+    { name: 'acces', description: 'Database acces queries.' },
+    { name: 'options', description: 'Allows reading from database and SET method.' }
 ];
 
 function CategorySelector({ onSelect, onCancel }) {

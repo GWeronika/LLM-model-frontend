@@ -54,8 +54,9 @@ router.get('/', async(_, res) => {
 router.patch('/:id', async(req, res) => {
     const idToLoad = req.params.id;
     const convIndex = conversations.findIndex(c => c.id === idToLoad);
-    
-    conversations[convIndex].messages = await loadConversationMsg(idToLoad);
+    const loadMsg = await loadConversationMsg(idToLoad);
+
+    conversations[convIndex].messages = [...loadMsg, ...conversations[convIndex].messages];
     conversations[convIndex].msgLoaded = true;
     return res.json(conversations);
 });
