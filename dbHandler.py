@@ -11,7 +11,7 @@ class DbHandler:
         self.conn = MySQLdb.connect(
             host='localhost',
             user='root',
-            password='1234',
+            password='123',
             database='LLM'
         )
         self.cursor = self.conn.cursor()
@@ -96,6 +96,11 @@ class DbHandler:
         if len(rows) > 0 :return rows[-1]
         return []
     
+    def getStyle(self, projectId):
+        style = str(self.getCode(projectId, "CODESTYLERULES"))
+        print(style)
+        return style
+    
     def getDescription(self, projectId, functionName):
         sql = """SELECT description FROM descriptions WHERE projectName =%s AND functionName = %s ORDER BY id"""
         values = (projectId, functionName)
@@ -120,30 +125,33 @@ class DbHandler:
         sql = """INSERT INTO convodata 
                 (projectName , conversationId , conversationName, creationDate, category) 
                 VALUES (%s,%s,%s,%s,%s)"""
+        if category == 'editTitle': sql = """UPDATE convodata SET conversationName = %s WHERE conversationId = %s AND projectName = %s"""
         values = (projectId, convoId, convoName, date, category)
+        if category == 'editTitle': values = (convoName, convoId, projectId)
         return self.__executeCommit(sql, values)
 
     def loadConversationData(self, projectId):
-        sql = """SELECT 
-        conversationId , conversationName, creationDate, category FROM convodata
+        sql = """SELECT  conversationId , conversationName, creationDate, category FROM convodata
         WHERE projectName = %s"""
         values = (projectId,)
         rows = self.__executeFetchall(sql, values)
-        
+
         out = ""
         for i,r in enumerate(rows):
             if i==10: break
             if len(out) + len(str(r))+5 > 50000: break
             for el in r: out += str(el) + ","
+            out = out[:-1]
             out += ";"
         return out[:-1]
 
     def loadConversationMsg(self, projectId, convoId):
-        rows = self.getConversationContext(projectId, convoId)[::-1]
-        
+        rows = self.getConversationContext(projectId, convoId)
+
         out = ""
         for r in rows:
-            if len(out) + len(str(r))+5 > 50000: break
-            for el in r: out += str(el) + ","
-            out += ";"
-        return out[:-1]
+            if len(out) + len(str(r))+15 > 50000: break
+            for el in r: out += str(el) + "!@#$%,"
+            out = out[:-6]
+            out += "!@#$%;"
+        return out[:-6]
