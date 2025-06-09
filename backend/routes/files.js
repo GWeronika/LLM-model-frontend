@@ -92,7 +92,7 @@ router.post('/save-code', async (req, res) => {
         const filePath = path.join(CODE_ROOT, fileName);
 
         await fs.appendFile(filePath, content + '\n', 'utf-8');
-        await updateSheet('Anonymous', content, '', 'appendFunction', fileName);        res.json({ message: `Dopisano ${codeBlocks.length} bloków kodu do pliku ${fileName}` });
+        await updateSheet('Anonymous', content, '', 'saveFunction', fileName);        res.json({ message: `Dopisano ${codeBlocks.length} bloków kodu do pliku ${fileName}` });
     } catch (e) {
         console.error('save-code error:', e);
         res.status(500).json({ error: 'Błąd zapisu pliku' });
