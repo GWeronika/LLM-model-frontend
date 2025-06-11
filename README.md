@@ -182,6 +182,10 @@ When a conversation includes code, you can:
 
 ![img.png](public/img.png)
 
+![img2.png](public/img2.png)
+
+![img3.png](public/img3.png)
+
 ---
 
 ## Available Scripts
