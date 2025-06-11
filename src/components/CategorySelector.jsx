@@ -16,22 +16,24 @@ const categories = [
 function CategorySelector({ onSelect, onCancel }) {
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
+            <div>
                 <h2 className={styles.title}>Choose a category</h2>
             </div>
-            <div className={styles.grid}>
-                {categories.map((cat) => (
-                    <div
-                        key={cat.name}
-                        className={styles.card}
-                        onClick={() => onSelect(cat.name)}
-                    >
-                        <h3>{cat.name}</h3>
-                        <p>{cat.description}</p>
-                    </div>
-                ))}
-                <button className={styles.cancelButton} onClick={onCancel}>Cancel</button>
+            <div className={styles.scrollContainer}>
+                <div className={styles.grid}>
+                    {categories.map((cat) => (
+                        <div
+                            key={cat.name}
+                            className={styles.card}
+                            onClick={() => onSelect(cat.name)}
+                        >
+                            <h3>{cat.name}</h3>
+                            <p>{cat.description}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
+            <button className={styles.cancelButton} onClick={onCancel}>Cancel</button>
         </div>
     );
 }
