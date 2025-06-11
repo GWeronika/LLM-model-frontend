@@ -22,11 +22,13 @@ export default function Sidebar({
     return (
         <div className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
             <div className={styles.headerControls}>
-                <button className={styles.newButton} onClick={onCreateNew}>
-                    New Conversation
-                </button>
+                {isOpen && (
+                    <button className={styles.newButton} onClick={onCreateNew}>
+                        New Conversation
+                    </button>
+                )}
                 <button className={styles.toggleButton} onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? "←" : "→"}
+                    <i className={`fa-regular ${isOpen ? "fa-circle-left" : "fa-circle-right"} fa-lg`}></i>
                 </button>
             </div>
             {isOpen && (
