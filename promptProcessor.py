@@ -16,6 +16,7 @@ class PromptProcessor:
         "saveConversationData",
         "loadConversationData",
         "loadConversationMsg",
+        "appendFunction",
         "options"
     ]
 
@@ -71,6 +72,7 @@ class PromptProcessor:
         elif category == 'deleteProject': return self.DB.deleteProject(df['projectId'][0])
         elif category == 'loadConversationData': return self.DB.loadConversationData(df['projectId'][0])
         elif category == 'loadConversationMsg': return self.DB.loadConversationMsg(df['projectId'][0], df['convoId'][0])
+        elif category == 'appendFunction': return self.DB.appendFunction(df['projectId'][0], df['fName'][0], df['query'][0])
         else:
             query = df['query'][0]
             if query == "SET":
