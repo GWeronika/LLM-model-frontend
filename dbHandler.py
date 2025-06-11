@@ -40,6 +40,14 @@ class DbHandler:
                 VALUES (%s,%s,%s)"""
         values = (projectId, fName, code)
         return self.__executeCommit(sql, values)
+
+    def appendFunction(self,  projectId, fName, code):
+        sql = """UPDATE codebase
+                SET code = CONCAT(code, %s)
+                WHERE projectName = %s AND functionName = %s
+        """
+        values = (projectId, fName, code)
+        return self.__executeCommit(sql, values)
     
     def saveDescription(self, projectId, fName, desc):
         sql = """INSERT INTO descriptions 
