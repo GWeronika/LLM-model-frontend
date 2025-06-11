@@ -8,10 +8,11 @@
     display: flex;
     flex-direction: column;
     border-right: 1px solid #4B5563;
+    flex-shrink: 0;
 }
 
 .open {
-    width: 250px;
+    width: 280px;
 }
 
 .closed {
