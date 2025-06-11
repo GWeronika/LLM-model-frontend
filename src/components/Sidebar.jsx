@@ -33,20 +33,31 @@ export default function Sidebar({
             </div>
             {isOpen && (
                 <div className={styles.content}>
-                    <div className={styles.tabHeader} onClick={() => toggleTab("conversations")}>Conversations {expandedTab === "conversations" ? "▲" : "▼"}</div>
-                    {expandedTab === "conversations" && (
-                        <ConversationsTab
-                            conversations={conversations}
-                            onSelectConversation={onSelectConversation}
-                            onCreateNew={onCreateNew}
-                            onDeleteConversation={onDeleteConversation}
-                            onUpdateTitle={onUpdateTitle}
-                            activeConversationId={activeConversationId}
-                        />
-                    )}
-
-                    <div className={styles.tabHeader} onClick={() => toggleTab("files")}>Files {expandedTab === "files" ? "▲" : "▼"}</div>
-                    {expandedTab === "files" && <FilesTab files={files} onSelectFile={onSelectFile} onDeleteFile={onDeleteFile} />}
+                    <div className={styles.tabsContainer}>
+                        <div className={styles.tabHeader} onClick={() => toggleTab("conversations")}>
+                            Conversations {expandedTab === "conversations" ? "▲" : "▼"}
+                        </div>
+                        {expandedTab === "conversations" && (
+                            <div className={styles.tabContent}>
+                                <ConversationsTab
+                                    conversations={conversations}
+                                    onSelectConversation={onSelectConversation}
+                                    onCreateNew={onCreateNew}
+                                    onDeleteConversation={onDeleteConversation}
+                                    onUpdateTitle={onUpdateTitle}
+                                    activeConversationId={activeConversationId}
+                                />
+                            </div>
+                        )}
+                        <div className={styles.tabHeader} onClick={() => toggleTab("files")}>
+                            Files {expandedTab === "files" ? "▲" : "▼"}
+                        </div>
+                        {expandedTab === "files" && (
+                            <div className={styles.tabContent}>
+                                <FilesTab files={files} onSelectFile={onSelectFile} onDeleteFile={onDeleteFile} />
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </div>
